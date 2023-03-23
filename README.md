@@ -1,6 +1,10 @@
 # Mandelbrot Set Viewer
 This is a Java program that displays the Mandelbrot set and allows the user to pan and zoom using the mouse. It also includes a control slider to adjust the maximum iteration count and a dropdown menu to change the color scheme.
 
+![image](https://user-images.githubusercontent.com/53713571/227119963-ba55516a-8ccb-418b-84e7-cb176f881628.png)
+![image](https://user-images.githubusercontent.com/53713571/227120084-cfd14a49-ee19-415d-b6d0-da47ee4508cf.png)
+![image](https://user-images.githubusercontent.com/53713571/227119927-e75e87f7-4354-4360-94e3-385e706223eb.png)
+
 ## Getting Started
 ### Prerequisites
 To run this program, you need to have Java SE Development Kit (JDK) 8 or higher installed on your computer. You can download the latest version of JDK from the Oracle website.
