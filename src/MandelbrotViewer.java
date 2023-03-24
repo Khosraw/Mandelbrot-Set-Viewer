@@ -47,6 +47,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.List;
 
 public class MandelbrotViewer extends JFrame {
     // The last mouse position when the user pressed the mouse button.
@@ -137,8 +143,10 @@ public class MandelbrotViewer extends JFrame {
         private double offsetX = -1.0;
         private double offsetY = 0.0;
         private int maxIterations = 250;
-
         private ColorScheme colorScheme = ColorScheme.RED;
+
+        // executor service for multithreading
+        private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         // The color schemes that can be used to color the Mandelbrot set.
         private enum ColorScheme {
@@ -226,6 +234,16 @@ public class MandelbrotViewer extends JFrame {
             repaint();
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////
+        //  _____      _       _      _____                                             _     //
+        // |  __ \    (_)     | |    / ____|                                           | |    //
+        // | |__) |_ _ _ _ __ | |_  | |     ___  _ __ ___  _ __   ___  _ __   ___ _ __ | |_   //
+        // |  ___/ _` | | '_ \| __| | |    / _ \| '_ ` _ \| '_ \ / _ \| '_ \ / _ \ '_ \| __|  //
+        // | |  | (_| | | | | | |_  | |___| (_) | | | | | | |_) | (_) | | | |  __/ | | | |_   //
+        // |_|   \__,_|_|_| |_|\__|  \_____\___/|_| |_| |_| .__/ \___/|_| |_|\___|_| |_|\__|  //
+        //                                                | |                                 //
+        //                                                |_|                                 //
+        ////////////////////////////////////////////////////////////////////////////////////////
         @Override
         protected void paintComponent(Graphics graphics) {
             // Paint the background.
@@ -238,41 +256,52 @@ public class MandelbrotViewer extends JFrame {
             int width = image.getWidth();
             int height = image.getHeight();
 
-            // Calculate the Mandelbrot set.
+            List<Future<Void>> futures = new ArrayList<>(height);
             for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    double zx = (x - width / 2.0) / zoom + offsetX;
-                    double zy = (y - height / 2.0) / zoom + offsetY;
+                final int currentY = y;
 
-                    double cX = zx;
-                    double cY = zy;
-                    int iter = 0;
+                // submit a task to the executor service to calculate the pixels for the current row
+                futures.add(executorService.submit(() -> {
+                    for (int x = 0; x < width; x++) {
+                        double zx = (x - width / 2.0) / zoom + offsetX;
+                        double zy = (currentY - height / 2.0) / zoom + offsetY;
 
-                    // interate until the point is outside the set or the maximum number of iterations is reached
-                    // z = z^2 + c - the Mandelbrot set is the set of points that do not diverge when iterated
-                    // over the function z = z^2 + c (where z and c are complex numbers) will be inside the set
-                    // colored black, and points that do diverge will be colored according to the color scheme
-                    while (zx * zx + zy * zy < 4 && iter < maxIterations) {
-                        double tmp = zx * zx - zy * zy + cX;
-                        zy = 2.0 * zx * zy + cY;
-                        zx = tmp;
-                        iter++;
+                        double cX = zx;
+                        double cY = zy;
+                        int iter = 0;
+
+                        while (zx * zx + zy * zy < 4 && iter < maxIterations) {
+                            double tmp = zx * zx - zy * zy + cX;
+                            zy = 2.0 * zx * zy + cY;
+                            zx = tmp;
+                            iter++;
+                        }
+
+                        if (iter == maxIterations) {
+                            // set the pixel to black for points inside the set
+                            pixels[x + currentY * width] = 0;
+                        } else {
+                            // use the selected color scheme for points outside the set
+                            Color color = colorScheme.getColor();
+                            int colorValue = (int) (255.0 * iter / maxIterations);
+                            int r = color.getRed() * colorValue / 255;
+                            int g = color.getGreen() * colorValue / 255;
+                            int b = color.getBlue() * colorValue / 255;
+                            int rgb = (r << 16) | (g << 8) | b;
+                            pixels[x + currentY * width] = rgb;
+                        }
                     }
+                    return null;
+                }));
+            }
 
-                    if (iter == maxIterations) {
-                        // set the pixel to black for points inside the set
-                        pixels[x + y * width] = 0;
-                    } else {
-                        // use the selected color scheme for points outside the set
-                        Color color = colorScheme.getColor();
-                        int colorValue = (int) (255.0 * iter / maxIterations);
-                        int r = color.getRed() * colorValue / 255;
-                        int g = color.getGreen() * colorValue / 255;
-                        int b = color.getBlue() * colorValue / 255;
-                        int rgb = (r << 16) | (g << 8) | b;
-                        pixels[x + y * width] = rgb;
-                    }
+            // wait for all threads to finish
+            try {
+                for (Future<Void> future : futures) {
+                    future.get();
                 }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
 
             graphics.drawImage(image, 0, 0, null);
