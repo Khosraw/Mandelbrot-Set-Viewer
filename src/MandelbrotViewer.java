@@ -58,12 +58,9 @@ public class MandelbrotViewer extends JFrame {
     // The last mouse position when the user pressed the mouse button.
     private static Point lastMousePosition;
 
-    // The color schemes that can be used to color the Mandelbrot set.
-    private static final MandelbrotPanel.ColorScheme[] COLOR_SCHEMES = MandelbrotPanel.ColorScheme.values();
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            MandelbrotViewer viewer = new MandelbrotViewer();
+            MandelbrotViewerFrame viewer = new MandelbrotViewerFrame();
             viewer.setVisible(true);
         });
     }
@@ -75,65 +72,20 @@ public class MandelbrotViewer extends JFrame {
         setSize(800, 800);
         setLocationRelativeTo(null);
 
-        // Create the Mandelbrot set panel.
-        MandelbrotPanel panel = new MandelbrotPanel();
-        add(panel, BorderLayout.CENTER);
-
-        // Create the control panel.
-        JComboBox<MandelbrotPanel.ColorScheme> colorSchemeComboBox = createColorSchemeComboBox(panel);
-        JPanel controlPanel = new JPanel();
-        controlPanel.add(new JLabel("Color scheme: "));
-        controlPanel.add(colorSchemeComboBox);
-        add(controlPanel, BorderLayout.NORTH);
-
-        // Create the slider for the number of iterations.
-        JSlider slider = createIterationsSlider(panel);
-        add(slider, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Creates a combo box that allows the user to select a color scheme.
-     * @param panel The panel that displays the Mandelbrot set.
-     * @return The combo box.
-     */
-    private JComboBox<MandelbrotPanel.ColorScheme> createColorSchemeComboBox(MandelbrotPanel panel) {
-        JComboBox<MandelbrotPanel.ColorScheme> comboBox = new JComboBox<>(COLOR_SCHEMES);
-
-        comboBox.addActionListener(e -> {
-            JComboBox<MandelbrotPanel.ColorScheme> source = (JComboBox<MandelbrotPanel.ColorScheme>) e.getSource();
-            MandelbrotPanel.ColorScheme colorScheme = (MandelbrotPanel.ColorScheme) source.getSelectedItem();
-            panel.setColorScheme(colorScheme);
-            panel.repaint();
-        });
-
-        return comboBox;
-    }
-
-    /**
-     * Creates a slider that allows the user to select the number of iterations.
-     * @param panel The panel that displays the Mandelbrot set.
-     * @return The slider.
-     */
-    private JSlider createIterationsSlider(MandelbrotPanel panel) {
-        int minIterations = 25;
-        int maxIterations = 10000;
-        int initialIterations = 250;
-
-        JSlider slider = new JSlider(JSlider.HORIZONTAL, minIterations, maxIterations, initialIterations);
-        slider.setMajorTickSpacing(1000);
-        slider.setMinorTickSpacing(100);
-        slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
-
-        slider.addChangeListener(e -> {
-            JSlider source = (JSlider) e.getSource();
-            if (!source.getValueIsAdjusting()) {
-                int newIterations = source.getValue();
-                panel.setMaxIterations(newIterations);
-            }
-        });
-
-        return slider;
+//        // Create the Mandelbrot set panel.
+//        MandelbrotPanel panel = new MandelbrotPanel();
+//        add(panel, BorderLayout.CENTER);
+//
+//        // Create the control panel.
+//        JComboBox<MandelbrotPanel.ColorScheme> colorSchemeComboBox = createColorSchemeComboBox(panel);
+//        JPanel controlPanel = new JPanel();
+//        controlPanel.add(new JLabel("Color scheme: "));
+//        controlPanel.add(colorSchemeComboBox);
+//        add(controlPanel, BorderLayout.NORTH);
+//
+//        // Create the slider for the number of iterations.
+//        JSlider slider = createIterationsSlider(panel);
+//        add(slider, BorderLayout.SOUTH);
     }
 
     // The panel that displays the Mandelbrot set.
@@ -146,10 +98,10 @@ public class MandelbrotViewer extends JFrame {
         private ColorScheme colorScheme = ColorScheme.RED;
 
         // executor service for multithreading
-        private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         // The color schemes that can be used to color the Mandelbrot set.
-        private enum ColorScheme {
+        enum ColorScheme {
             RED(Color.RED),
             BLUE(Color.BLUE),
             GREEN(Color.GREEN),
