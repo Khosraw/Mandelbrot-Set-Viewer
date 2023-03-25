@@ -9,7 +9,7 @@
  * in and out of the set, as well as pan around the set. The user can also change the color scheme
  * of the set.
  * @author  Khosraw Azizi
- * @version 1.0
+ * @version 1.3
  * @since 2023-03-23
  * @see MandelbrotPanel
  * @see MandelbrotPanel.ColorScheme
@@ -36,7 +36,7 @@
  * @see <a href="https://en.wikipedia.org/wiki/Mandelbrot_set#Mandelbrot_set">Mandelbrot Set</a>
  * @see <a href="https://en.wikipedia.org/wiki/Mandelbrot_set#Julia_set">Julia Set</a>
  * @bug No known bugs.
- * @keywords Mandelbrot set, fractal, complex number, viewer, zoom, pan, color scheme
+ * @keywords Mandelbrot set, fractal, complex number, viewer, zoom, pan, color scheme, multithreading, multi-threading, Swing, JFrame, JPanel, ExecutorService, Executors, Future, Dark Mode, Dark
  * @license MIT License
  */
 
@@ -71,21 +71,6 @@ public class MandelbrotViewer extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 800);
         setLocationRelativeTo(null);
-
-//        // Create the Mandelbrot set panel.
-//        MandelbrotPanel panel = new MandelbrotPanel();
-//        add(panel, BorderLayout.CENTER);
-//
-//        // Create the control panel.
-//        JComboBox<MandelbrotPanel.ColorScheme> colorSchemeComboBox = createColorSchemeComboBox(panel);
-//        JPanel controlPanel = new JPanel();
-//        controlPanel.add(new JLabel("Color scheme: "));
-//        controlPanel.add(colorSchemeComboBox);
-//        add(controlPanel, BorderLayout.NORTH);
-//
-//        // Create the slider for the number of iterations.
-//        JSlider slider = createIterationsSlider(panel);
-//        add(slider, BorderLayout.SOUTH);
     }
 
     // The panel that displays the Mandelbrot set.
@@ -133,6 +118,8 @@ public class MandelbrotViewer extends JFrame {
         }
 
         public MandelbrotPanel() {
+            setPreferredSize(new Dimension(1440, 900));
+
             // Mouse wheel zooms in and out.
             addMouseWheelListener(new MouseAdapter() {
                 @Override

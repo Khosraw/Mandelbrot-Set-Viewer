@@ -16,42 +16,89 @@ public class MandelbrotViewerFrame extends JFrame {
     private static final MandelbrotViewer.MandelbrotPanel.ColorScheme[] COLOR_SCHEMES = MandelbrotViewer.MandelbrotPanel.ColorScheme.values();
 
     public MandelbrotViewerFrame() {
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Set the colors for the UI.
+        Color background = new Color(32, 32, 32);
+        Color foreground = new Color(224, 224, 224);
+        Color accent = new Color(200, 24, 0);
+        Color accentForeground = new Color(240, 240, 240);
+        UIManager.put("Panel.background", background);
+        UIManager.put("Label.foreground", foreground);
+        UIManager.put("Slider.background", background);
+        UIManager.put("Slider.foreground", accent);
+        UIManager.put("Slider.trackForeground", accent);
+        UIManager.put("Button.background", accent);
+        UIManager.put("Button.foreground", accentForeground);
+        UIManager.put("ComboBox.background", background);
+        UIManager.put("ComboBox.foreground", foreground);
+        UIManager.put("ComboBox.selectionBackground", accent);
+        UIManager.put("ComboBox.selectionForeground", accentForeground);
+        UIManager.put("ComboBox.buttonBackground", accent);
+        UIManager.put("ComboBox.buttonForeground", accentForeground);
+        UIManager.put("Button.defaultButtonFollowsFocus", true);
+
         setTitle("Mandelbrot Set Viewer");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, 800);
-        setLocationRelativeTo(null);
 
         // Create the Mandelbrot set panel.
-        MandelbrotViewer.MandelbrotPanel panel = new MandelbrotViewer.MandelbrotPanel();
-        add(panel, BorderLayout.CENTER);
+        MandelbrotViewer.MandelbrotPanel mandelbrotPanel = new MandelbrotViewer.MandelbrotPanel();
 
         // Create the control panel.
-        JComboBox<MandelbrotViewer.MandelbrotPanel.ColorScheme> colorSchemeComboBox = createColorSchemeComboBox(panel);
+        JComboBox<MandelbrotViewer.MandelbrotPanel.ColorScheme> colorSchemeComboBox = createColorSchemeComboBox(mandelbrotPanel);
         JPanel controlPanel = new JPanel();
+        controlPanel.setBackground(background);
         controlPanel.add(new JLabel("Color scheme: "));
+        colorSchemeComboBox.setBackground(accent);
+        colorSchemeComboBox.setForeground(accentForeground);
         controlPanel.add(colorSchemeComboBox);
-        add(controlPanel, BorderLayout.NORTH);
 
         // Create the button to save the image.
         JButton saveButton = new JButton("Save");
+        saveButton.setBackground(accent);
+        saveButton.setForeground(accentForeground);
+
         saveButton.addActionListener(e -> {
             try {
-                saveImage(panel);
+                saveImage(mandelbrotPanel);
             } catch (IOException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error saving image.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+        controlPanel.add(saveButton);
 
-        controlPanel.add(saveButton, BorderLayout.NORTH);
-
-        // Create the label for the number of iterations.
+        // Create the panel for the iterations' slider.
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.X_AXIS));
+        sliderPanel.setBackground(background);
         JLabel iterationsLabel = new JLabel("Iterations: ");
-        controlPanel.add(iterationsLabel, BorderLayout.SOUTH);
+        iterationsLabel.setForeground(foreground);
+        iterationsLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        sliderPanel.add(iterationsLabel);
+        JSlider slider = createIterationsSlider(mandelbrotPanel);
+        slider.setBackground(background);
+        slider.setForeground(accent);
+        sliderPanel.add(slider);
 
-        // Create the slider for the number of iterations.
-        JSlider slider = createIterationsSlider(panel);
-        add(slider, BorderLayout.SOUTH);
+        // Create the wrapper panel with margins.
+        JPanel wrapperPanel = new JPanel(new BorderLayout(5, 5));
+        wrapperPanel.setBackground(background);
+        wrapperPanel.add(controlPanel, BorderLayout.NORTH);
+        wrapperPanel.add(mandelbrotPanel, BorderLayout.CENTER);
+        wrapperPanel.add(sliderPanel, BorderLayout.SOUTH);
+        wrapperPanel.add(new JPanel(), BorderLayout.WEST);
+        wrapperPanel.add(new JPanel(), BorderLayout.EAST);
+
+        add(wrapperPanel);
+
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     /**
@@ -102,16 +149,23 @@ public class MandelbrotViewerFrame extends JFrame {
      * @throws IOException If an error occurs while saving the image.
      */
     private void saveImage(MandelbrotViewer.MandelbrotPanel panel) throws IOException {
+        // Create a file chooser.
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
+
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            // Save the image.
             File file = fileChooser.getSelectedFile();
+
             BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D g = image.createGraphics();
+
+            // Draw the panel to the image.
             panel.paint(g);
             g.dispose();
+
+            // Write the image to the file.
             ImageIO.write(image, "png", file);
         }
     }
-
 }
