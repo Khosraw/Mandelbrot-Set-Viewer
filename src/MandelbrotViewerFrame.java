@@ -25,7 +25,7 @@ public class MandelbrotViewerFrame extends JFrame {
         // Set the colors for the UI.
         Color background = new Color(32, 32, 32);
         Color foreground = new Color(224, 224, 224);
-        Color accent = new Color(200, 24, 0);
+        Color accent = new Color(153, 20, 0);
         Color accentForeground = new Color(240, 240, 240);
         UIManager.put("Panel.background", background);
         UIManager.put("Label.foreground", foreground);
