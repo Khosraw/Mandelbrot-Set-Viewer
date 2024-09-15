@@ -29,7 +29,7 @@ This is a multi-threaded Java program that displays the Mandelbrot and Julia set
 1. **Clone or Download the Repository**:
 
    ```bash
-   git clone https://github.com/yourusername/mandelbrot-julia-viewer.git
+   git clone https://github.com/Khosraw/Mandelbrot-Set-Viewer
    ```
 
 2. **Navigate to the Project Directory**:
