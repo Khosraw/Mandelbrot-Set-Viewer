@@ -13,9 +13,13 @@
  * c for which the function does not diverge when iterated from z = 0. The viewer allows the user to
  * change the value of c to generate different Julia sets. The user can change the Julia Constant value
  * and the Julia imag value.
- * @author  Khosraw Azizi
+ *
+ * @author Khosraw Azizi
  * @version 1.4
- * @since 2023-03-23
+ * @bug No known bugs.
+ * @keywords Mandelbrot set, julia, julia set, fractal, complex number, viewer, zoom, pan, color
+ * scheme, multithreading, multi-threading, Swing, JFrame, JPanel, ExecutorService, Executors, Future, Dark Mode, Dark
+ * @license MIT License
  * @see MandelbrotPanel
  * @see MandelbrotPanel.ColorScheme
  * @see <a href="https://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot Set</a>
@@ -40,11 +44,9 @@
  * @see <a href="https://en.wikipedia.org/wiki/Mandelbrot_set#Mandelbar">Mandelbar</a>
  * @see <a href="https://en.wikipedia.org/wiki/Mandelbrot_set#Mandelbrot_set">Mandelbrot Set</a>
  * @see <a href="https://en.wikipedia.org/wiki/Mandelbrot_set#Julia_set">Julia Set</a>
- * @bug No known bugs.
- * @keywords Mandelbrot set, julia, julia set, fractal, complex number, viewer, zoom, pan, color
- * scheme, multithreading, multi-threading, Swing, JFrame, JPanel, ExecutorService, Executors, Future, Dark Mode, Dark
- * @license MIT License
+ * @since 2023-03-23
  */
+
 import javax.swing.*;
 
 public class MandelbrotViewer {

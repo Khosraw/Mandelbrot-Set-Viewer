@@ -3,21 +3,23 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MandelbrotPanel extends JPanel {
+
+    // Executor service for multithreading
+    private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     // Setting the initial values for the fractal viewer (zoom, offset, iterations)
     private double zoom = 250.0;
     private double offsetX = -1.0;
     private double offsetY = 0.0;
     private int maxIterations = 250;
     private ColorScheme colorScheme = ColorScheme.RED;
-
-    // Executor service for multithreading
-    private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
     // Variables to handle panning
     private Point lastMousePosition;
 
@@ -29,48 +31,10 @@ public class MandelbrotPanel extends JPanel {
 
     // Progress bar
     private JProgressBar progressBar;
-
-    // Fractal type
-    public enum FractalType {
-        MANDELBROT,
-        JULIA;
-
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
-    }
-
     private FractalType fractalType = FractalType.MANDELBROT;
-
     // Julia set parameters
     private double juliaCReal = -0.4;
     private double juliaCImag = 0.6;
-
-    // The color schemes that can be used to color the fractal.
-    public enum ColorScheme {
-        RED(Color.RED),
-        BLUE(Color.BLUE),
-        GREEN(Color.GREEN),
-        PURPLE(new Color(128, 0, 128)),
-        ORANGE(new Color(255, 165, 0));
-
-        private final Color color;
-
-        ColorScheme(Color color) {
-            this.color = color;
-        }
-
-        public Color getColor() {
-            return color;
-        }
-
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
-    }
-
     public MandelbrotPanel() {
         setPreferredSize(new Dimension(800, 800));
 
@@ -449,6 +413,41 @@ public class MandelbrotPanel extends JPanel {
         actionMap.put("panDown", new PanAction(0, 10 / zoom));
         actionMap.put("zoomIn", new ZoomAction(1.1));
         actionMap.put("zoomOut", new ZoomAction(1 / 1.1));
+    }
+
+    // Fractal type
+    public enum FractalType {
+        MANDELBROT,
+        JULIA;
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+    }
+
+    // The color schemes that can be used to color the fractal.
+    public enum ColorScheme {
+        RED(Color.RED),
+        BLUE(Color.BLUE),
+        GREEN(Color.GREEN),
+        PURPLE(new Color(128, 0, 128)),
+        ORANGE(new Color(255, 165, 0));
+
+        private final Color color;
+
+        ColorScheme(Color color) {
+            this.color = color;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
     }
 
     private class PanAction extends AbstractAction {

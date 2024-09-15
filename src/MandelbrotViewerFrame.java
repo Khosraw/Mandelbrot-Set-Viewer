@@ -1,6 +1,5 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -10,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class MandelbrotViewerFrame extends JFrame {
+
     // Constants
     private static final int MIN_ITERATIONS = 25;
     private static final int MAX_ITERATIONS = 5000;
@@ -177,6 +177,7 @@ public class MandelbrotViewerFrame extends JFrame {
 
     /**
      * Creates a combo box that allows the user to select a color scheme.
+     *
      * @param panel The panel that displays the fractal.
      * @return The combo box.
      */
@@ -193,6 +194,7 @@ public class MandelbrotViewerFrame extends JFrame {
 
     /**
      * Creates a slider that allows the user to select the number of iterations.
+     *
      * @param panel The panel that displays the fractal.
      * @return The slider.
      */
@@ -216,10 +218,11 @@ public class MandelbrotViewerFrame extends JFrame {
 
     /**
      * Creates a slider for Julia set parameters.
-     * @param min The minimum value.
-     * @param max The maximum value.
+     *
+     * @param min          The minimum value.
+     * @param max          The maximum value.
      * @param initialValue The initial value.
-     * @param label The label for the slider.
+     * @param label        The label for the slider.
      * @return The slider.
      */
     private JSlider createJuliaParameterSlider(double min, double max, double initialValue, String label) {
@@ -238,6 +241,7 @@ public class MandelbrotViewerFrame extends JFrame {
 
     /**
      * Saves the fractal image to a file.
+     *
      * @param panel The panel that displays the fractal.
      * @throws IOException If an error occurs while saving the image.
      */
